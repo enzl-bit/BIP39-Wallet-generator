@@ -5,153 +5,130 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BIP39 Password Generator</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(145deg, #0f2027, #203a43, #2c5364);
+      color: #ffffff;
       margin: 0;
       padding: 0;
-      font-family: 'Orbitron', sans-serif;
-      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
       overflow-x: hidden;
+      transition: background 0.5s, color 0.5s;
     }
 
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      text-shadow: 0 0 10px #00ffe7;
+    body.dark-mode {
+      background: linear-gradient(145deg, #000000, #1a1a1a);
+      color: #00ffcc;
     }
 
     .container {
-      background-color: rgba(0, 0, 0, 0.6);
-      border: 2px solid #00ffe7;
-      padding: 2rem;
+      max-width: 700px;
+      margin: auto;
+      padding: 3rem;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      background: rgba(0, 0, 0, 0.3);
       border-radius: 20px;
-      width: 90%;
-      max-width: 600px;
-      box-shadow: 0 0 20px #00ffe7;
+      margin-top: 5vh;
       animation: fadeIn 1s ease-in-out;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      color: #00ffcc;
+    }
+
+    button {
+      background: #00ffcc;
+      border: none;
+      color: #000;
+      padding: 0.8rem 1.5rem;
+      margin: 0.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      background: #00d9aa;
     }
 
     textarea {
       width: 100%;
-      height: 150px;
+      height: 120px;
+      margin: 1.5rem 0;
+      font-size: 1.1rem;
       padding: 1rem;
       border-radius: 10px;
-      border: 1px solid #00ffe7;
-      background-color: #111;
-      color: #00ffe7;
+      border: none;
+      background: #111;
+      color: #00ffcc;
       resize: none;
-      margin-bottom: 1rem;
-      font-size: 1rem;
     }
 
-    button {
-      padding: 0.7rem 1.5rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      background: #00ffe7;
-      color: #000;
-      transition: background 0.3s, transform 0.2s;
-      margin: 0.3rem;
-    }
-
-    button:hover {
-      background: #00ccba;
-      transform: scale(1.05);
-    }
-
-    .qr-container {
+    canvas {
       margin-top: 1rem;
-      animation: fadeIn 1s ease-in-out;
+      animation: pulse 2s infinite;
     }
 
-    .dark-mode-toggle {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: none;
-      color: #00ffe7;
-      font-size: 1.5rem;
-      cursor: pointer;
-      border: none;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .dark-mode body {
-      background: #000;
-      color: #fff;
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
     }
   </style>
 </head>
 <body>
-  <button class="dark-mode-toggle" id="darkModeToggle">🌓</button>
   <div class="container">
-    <h1>BIP39 Password Generator</h1>
-    <textarea id="output" readonly>Generated BIP39 phrase will appear here...</textarea>
-    <div>
-      <button id="generateBtn">Generate</button>
-      <button id="downloadQR">Download QR</button>
-    </div>
-    <div class="qr-container">
-      <canvas id="qrCanvas"></canvas>
-    </div>
+    <h1>🔐 BIP39 Password Generator</h1>
+    <button id="darkModeToggle">🌓 Toggle Dark Mode</button>
+    <button id="generateBtn">🚀 Generate</button>
+    <textarea id="mnemonic" readonly></textarea>
+    <canvas id="qrcode"></canvas>
+    <br />
+    <button id="downloadQR">⬇️ Download QR</button>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const output = document.getElementById("output");
-      const generateBtn = document.getElementById("generateBtn");
-      const qrCanvas = document.getElementById("qrCanvas");
-      const darkModeToggle = document.getElementById("darkModeToggle");
-      const downloadQR = document.getElementById("downloadQR");
 
-      const wordlist = [/* isi wordlist BIP39 di sini */];
+  <script type="module">
+    import * as bip39 from 'https://esm.sh/bip39';
+    import QRCode from 'https://cdn.skypack.dev/qrcode';
 
-      function generateMnemonic() {
-        let phrase = [];
-        for (let i = 0; i < 12; i++) {
-          const index = Math.floor(Math.random() * wordlist.length);
-          phrase.push(wordlist[index]);
-        }
-        return phrase.join(" ");
-      }
+    const toggleBtn = document.getElementById("darkModeToggle");
+    const generateBtn = document.getElementById("generateBtn");
+    const qrCanvas = document.getElementById("qrcode");
+    const downloadBtn = document.getElementById("downloadQR");
+    const textarea = document.getElementById("mnemonic");
 
-      function renderQRCode(text) {
-        QRCode.toCanvas(qrCanvas, text, { color: { dark: "#00ffe7", light: "#000000" } });
-      }
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+    });
 
-      generateBtn.addEventListener("click", () => {
-        const mnemonic = generateMnemonic();
-        output.value = mnemonic;
-        renderQRCode(mnemonic);
-      });
+    if (localStorage.getItem("darkMode") === "true") {
+      document.body.classList.add("dark-mode");
+    }
 
-      downloadQR.addEventListener("click", () => {
-        const dataUrl = qrCanvas.toDataURL("image/png");
-        const link = document.createElement("a");
-        link.download = "bip39-qr.png";
-        link.href = dataUrl;
-        link.click();
-      });
+    generateBtn.addEventListener("click", async () => {
+      const mnemonic = bip39.generateMnemonic();
+      textarea.value = mnemonic;
+      await QRCode.toCanvas(qrCanvas, mnemonic, { width: 256 });
+    });
 
-      darkModeToggle.addEventListener("click", () => {
-        document.body.classList.toggle("dark-mode");
-      });
+    downloadBtn.addEventListener("click", () => {
+      const url = qrCanvas.toDataURL();
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "mnemonic-qr.png";
+      a.click();
     });
   </script>
 </body>
