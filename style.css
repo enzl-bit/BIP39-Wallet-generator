@@ -1,0 +1,86 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+body {
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.container {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 600px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    text-align: center;
+}
+
+h1 {
+    color: #00ffff;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    text-shadow: 0 0 5px #00ffff;
+}
+
+label, select, textarea, #status {
+    display: block;
+    margin: 1rem auto;
+    font-size: 1rem;
+    color: #ffffff;
+}
+
+select {
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: none;
+    background-color: #1f2b3a;
+    color: #00ffff;
+}
+
+textarea {
+    width: 100%;
+    height: 120px;
+    padding: 1rem;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: 1px solid #00ffff;
+    background-color: #0d1b2a;
+    color: #00ffff;
+    resize: none;
+}
+
+button {
+    background-color: #00ffff;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    margin: 0.5rem;
+    border-radius: 30px;
+    color: #000000;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px #00ffff;
+}
+
+button:hover {
+    background-color: #00b3b3;
+    box-shadow: 0 0 20px #00ffff;
+    transform: scale(1.05);
+}
+
+#qrcode {
+    margin-top: 1.5rem;
+}
