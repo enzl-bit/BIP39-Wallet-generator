@@ -1,31 +1,158 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BIP39 Password Generator</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BIP39 Password Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 10px #00ffe7;
+    }
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.6);
+      border: 2px solid #00ffe7;
+      padding: 2rem;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 0 20px #00ffe7;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      padding: 1rem;
+      border-radius: 10px;
+      border: 1px solid #00ffe7;
+      background-color: #111;
+      color: #00ffe7;
+      resize: none;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 0.7rem 1.5rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: #00ffe7;
+      color: #000;
+      transition: background 0.3s, transform 0.2s;
+      margin: 0.3rem;
+    }
+
+    button:hover {
+      background: #00ccba;
+      transform: scale(1.05);
+    }
+
+    .qr-container {
+      margin-top: 1rem;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .dark-mode-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      color: #00ffe7;
+      font-size: 1.5rem;
+      cursor: pointer;
+      border: none;
+    }
+
+    .dark-mode body {
+      background: #000;
+      color: #fff;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>BIP39 Password Generator</h1>
-        <label for="wordCount">Jumlah Kata:</label>
-        <select id="wordCount">
-            <option value="12">12</option>
-            <option value="15">15</option>
-            <option value="18">18</option>
-            <option value="21">21</option>
-            <option value="24">24</option>
-        </select>
-        <button id="generateBtn">Generate</button>
-        <button id="darkModeToggle">Toggle Dark Mode</button>
-        <textarea id="output" readonly placeholder="Mnemonic akan muncul di sini..."></textarea>
-        <div id="status"></div>
-        <button id="copyBtn">Copy to Clipboard</button>
-        <div id="qrcode"></div>
+  <button class="dark-mode-toggle" id="darkModeToggle">🌓</button>
+  <div class="container">
+    <h1>BIP39 Password Generator</h1>
+    <textarea id="output" readonly>Generated BIP39 phrase will appear here...</textarea>
+    <div>
+      <button id="generateBtn">Generate</button>
+      <button id="downloadQR">Download QR</button>
     </div>
-    <script src="main.js"></script>
+    <div class="qr-container">
+      <canvas id="qrCanvas"></canvas>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const output = document.getElementById("output");
+      const generateBtn = document.getElementById("generateBtn");
+      const qrCanvas = document.getElementById("qrCanvas");
+      const darkModeToggle = document.getElementById("darkModeToggle");
+      const downloadQR = document.getElementById("downloadQR");
+
+      const wordlist = [/* isi wordlist BIP39 di sini */];
+
+      function generateMnemonic() {
+        let phrase = [];
+        for (let i = 0; i < 12; i++) {
+          const index = Math.floor(Math.random() * wordlist.length);
+          phrase.push(wordlist[index]);
+        }
+        return phrase.join(" ");
+      }
+
+      function renderQRCode(text) {
+        QRCode.toCanvas(qrCanvas, text, { color: { dark: "#00ffe7", light: "#000000" } });
+      }
+
+      generateBtn.addEventListener("click", () => {
+        const mnemonic = generateMnemonic();
+        output.value = mnemonic;
+        renderQRCode(mnemonic);
+      });
+
+      downloadQR.addEventListener("click", () => {
+        const dataUrl = qrCanvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.download = "bip39-qr.png";
+        link.href = dataUrl;
+        link.click();
+      });
+
+      darkModeToggle.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+      });
+    });
+  </script>
 </body>
 </html>
