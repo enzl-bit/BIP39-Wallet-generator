@@ -75,6 +75,24 @@
       animation: pulse 2s infinite;
     }
 
+    footer {
+      text-align: center;
+      margin-top: 4rem;
+      padding: 2rem;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    footer a {
+      color: #00ffcc;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -97,6 +115,12 @@
     <br />
     <button id="downloadQR">⬇️ Download QR</button>
   </div>
+
+  <footer>
+    © 2025 BIP39 Generator | 
+    <a href="https://github.com/enzl-bit/bip39-password-generator" target="_blank">GitHub</a> |
+    <a href="https://buymeacoffee.com/enzlbit" target="_blank">☕ Donate</a>
+  </footer>
 
   <script type="module">
     import * as bip39 from 'https://esm.sh/bip39';
