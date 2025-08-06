@@ -3,12 +3,12 @@ let wordlist = [];
 let fullWordlist = [];
 
 // Load BIP39 wordlist
-fetch('wordlist.txt')
-    .then(response => response.text())
-    .then(text => {
-        fullWordlist = text.split('\n').filter(Boolean);
-        wordlist = fullWordlist.slice(); // Use full list for entropy simulation
-    });
+fetch('https://raw.githubusercontent.com/bitcoin/bips/master/bip-0039/english.txt')
+  .then(response => response.text())
+  .then(text => {
+      wordlist = text.split('\n').filter(Boolean);
+  });
+
 
 function toBinary(str) {
     return str.map(word => {
