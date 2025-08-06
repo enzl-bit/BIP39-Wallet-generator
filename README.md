@@ -20,7 +20,7 @@ Built with **Vanilla JavaScript**, fully client-side, no data ever leaves your b
 
 ## 🌐 Live Demo
 
-> *(Coming soon: upload this to GitHub Pages or Vercel to share a public link)*
+> https://bip-39-password-generator.vercel.app
 
 ---
 
